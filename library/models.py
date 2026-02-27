@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 
@@ -13,6 +14,22 @@ class Author(models.Model):
         max_length=100,
     )
     date_for_birth: datetime = models.DateTimeField()
+
+    profile = models.URLField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+    deleted = models.BooleanField(
+        default=False
+    )
+    rating = models.FloatField(
+        default=1,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(10)
+        ]
+    )
 
 
 
