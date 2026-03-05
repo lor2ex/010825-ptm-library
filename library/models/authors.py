@@ -41,3 +41,6 @@ class Author(models.Model):
         verbose_name="Рейтинг"
 
     )
+
+    def __str__(self):
+        return f"{self.surname} {self.name[0]} ({self.rating})"
