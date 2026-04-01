@@ -1,6 +1,8 @@
-from library.views.categories import CategoryListAPIView
+from library.views.categories import CategoryListCreateAPIView
+from library.views.books import BookListAPIView
 
 
 __all__ = [
-    'CategoryListAPIView',
+    'CategoryListCreateAPIView',
+    'BookListAPIView',
 ]
