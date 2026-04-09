@@ -76,3 +76,16 @@ class Book(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.genre})"
+
+    @property
+    def rating(self):
+        reviews = self.reviews.all()
+        total_reviews = reviews.count()
+
+        if total_reviews == 0:
+            return 0
+
+        total_rating = sum(review.rating for review in reviews)
+        average_rating = total_rating / total_reviews
+
+        return round(average_rating, 2)
