@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 from environ import Env
 
@@ -45,6 +45,10 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'django_filters',
+    'rest_framework.authtoken',
+    'drf_spectacular',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 
     'library.apps.LibraryConfig',
 ]
@@ -55,6 +59,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'library.middlewares.JWTMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -120,6 +125,77 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    'DEFAULT_PAGINATION_CLASS': 'paginators.MyCustomCursorPagination',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "НАШЕ КРУТЕЦКОЕ ПРИЛОЖЕНИЕ",
+    "DESCRIPTION": (
+        "Внутренняя документация к backend приложению.",
+        "Доступ будет только у Staff команды. Работа через Session + JWT токены для API запросов."
+    ),
+
+    "VERSION": "1.0.0",
+    "OAS_VERSION": "3.0.3",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SERVE_PUBLIC": False,
+    "SERVE_PERMISSIONS": [
+        "rest_framework.permissions.IsAdminUser",
+    ],
+    "SERVE_AUTHENTICATION": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "AUTHENTICATION_WHITELIST": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "displayOperationId": True,
+        "persistAuthorization": True,
+        "filter": True,
+        "tryItOutEnabled": True,
+        "docExpansion": "list",
+        "defaultModelsExpandDepth": 2,
+        "defaultModelExpandDepth": 2,
+        "displayRequestDuration": True,
+        "tagsSorter": "alpha",
+        "operationsSorter": "alpha",
+    },
+
+    "SWAGGER_UI_OAUTH2_CONFIG": {},
+    "REDOC_UI_SETTINGS": {},
+    "SCHEMA_PATH_PREFIX": r"/api/v[0-9]+",
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SORT_OPERATIONS": True,
+    "SORT_OPERATION_PARAMETERS": True,
+
+    "CONTACT": {
+        "name": "Backend Team",
+        "email": "backend@example.com",
+    },
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'BLACKLIST_ENABLED': True,
+    'JTI_CLAIM': "jti",
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+}
 
 
 # Internationalization
